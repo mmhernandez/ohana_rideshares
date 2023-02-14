@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ohana Rideshares</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <header class="container border-bottom py-4 d-flex justify-content-between">
+        <p>Welcome {{user.first_name}}</p>
+        <div class="d-flex gap-4">
+            <a href="/rides/new" class="d-flex gap-2 text-warning">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                </svg>
+                Request a Ride
+            </a>
+            <a href="/logout">log out</a>
+        </div>
+    </header>
+    <div class="container d-flex justify-content-between gap-4 mt-5 w-75">
+        <div class="w-50">
+            <h3 class="text-warning fst-italic text-center">Rideshare Requests</h3>
+            {% for ride in rides %}
+                {% if not ride.driver_id %}
+                    {% if ride.passenger_id == session["id"] %}
+                        <div class="border rounded bg-warning p-3 my-4 d-flex gap-2">
+                    {% else %}
+                        <div class="border rounded p-4 my-4 d-flex gap-2">
+                    {% endif %}
+                            <div class="w-25">
+                                <p class="fw-bold">Rider:</p>
+                                <p class="fw-bold">Destination</p>
+                                <p class="fw-bold">When needed:</p>
+                            </div>
+                            <div class="w-50">
+                                <p>{{ride.passenger.first_name}}</p>
+                                <p>{{ride.destination}}</p>
+                                <p>{{ride.date.strftime("%b %d")}}</p>
+                            </div>
+                            {% if ride.passenger_id == session["id"] %}
+                                <a href="/cancel_request/{{ride.id}}">Cancel Ride</a>
+                            {% else %}
+                                <a href="/add_driver/{{ride.id}}">I can drive!</a>
+                            {% endif %}
+                        </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <div>
+            <h3 class="text-warning fst-italic text-center">Booked Rideshares</h3>
+            {% for ride in rides %}
+                {% if ride.driver_id %}
+                    {% if ride.driver_id == session["id"] %}
+                        <div class="border rounded bg-warning p-4 my-4 d-flex flex-column gap-2">
+                    {% elif ride.passenger_id == session["id"] %}
+                        <div class="border rounded bg-warning p-4 my-4 d-flex flex-column gap-2">
+                    {% else %}
+                        <div class="border rounded p-4 my-4 d-flex flex-column gap-2">
+                    {% endif %}
+                            <p>
+                                <span class="fw-bold">{{ride.driver.first_name}}</span> is driving <span class="fw-bold">{{ride.passenger.first_name}}</span> to {{ride.destination}} on {{ride.date.strftime("%b %d")}}
+                            </p>
+                            {% if ride.driver_id == session["id"] %}
+                                <div>
+                                    <a href="/rides/{{ride.id}}">Details</a><span> | </span>   
+                                    <a href="/driver_cancellation/{{ride.id}}">Cancel</a>
+                                </div>
+                            {% endif %}
+                            {% if ride.passenger_id == session["id"] %}
+                                <div>
+                                    <a href="/rides/{{ride.id}}">Details</a>
+                                </div>
+                            {% endif %}
+                        </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>
