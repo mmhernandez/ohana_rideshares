@@ -54,7 +54,7 @@
             {% for ride in rides %}
                 {% if ride.driver_id %}
                     {% if ride.driver_id == session["id"] %}
-                        <div class="border rounded bg-warning p-4 my-4 d-flex flex-column gap-2">
+                        <div class="border border-dark rounded bg-warning p-4 my-4 d-flex flex-column gap-2">
                     {% elif ride.passenger_id == session["id"] %}
                         <div class="border rounded bg-warning p-4 my-4 d-flex flex-column gap-2">
                     {% else %}

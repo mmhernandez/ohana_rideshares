@@ -30,7 +30,6 @@ def insert_ride():
             "driver_id": None,
             "passenger_id": session["id"]
         }
-        print(f"ride_data = {ride_data}")
         if rides.Ride.validate_ride(ride_data):
             rides.Ride.insert_ride(ride_data)
             if "destination" in session:
@@ -67,7 +66,7 @@ def cancel_ride_request():
 @app.route("/cancel_request/<int:id>")
 def cancel_ride_by_id(id):
     if "id" in session:
-        #delete ride
+        rides.Ride.delete_ride({"id": id})
         return redirect("/dashboard")
     return redirect("/")
 
@@ -96,5 +95,28 @@ def cancel_driver(id):
 @app.route("/rides/<int:id>")
 def view_ride(id):
     if "id" in session:
-        return render_template("view_ride.html")
+        ride_info = rides.Ride.get_one_with_passenger_and_driver({"id": id})
+        return render_template("view_ride.html", ride=ride_info)
+    return redirect("/")
+
+@app.route("/rides/edit/<int:id>")
+def edit_ride(id):
+    if "id" in session:
+        ride_info = rides.Ride.get_one_with_passenger_and_driver({"id": id})
+        return render_template("edit_ride.html", ride=ride_info)
+    return redirect("/")
+
+@app.route("/update/ride/<int:id>", methods=["POST"])
+def update_ride(id):
+    if "id" in session:
+        ride_data = {
+            "id": id,
+            "pickup": request.form["pickup"],
+            "details": request.form["details"]
+        }
+        if rides.Ride.validate_ride_edit(ride_data):
+            rides.Ride.update_ride_pickup_details(ride_data)
+            return redirect(f"/rides/{id}")   
+        else:
+            return redirect(f"/rides/edit/{id}")     
     return redirect("/")

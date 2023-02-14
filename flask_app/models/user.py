@@ -78,7 +78,6 @@ class User:
     def validate_login(data):
         is_valid = True
         user_info = User.get_user_by_email(data)
-        print(user_info.password)
         if not user_info:
             flash("Invalid email and/or password", "login")
             is_valid = False

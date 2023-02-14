@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ohana Rideshares</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+</head>
+<body>
+    <header class="container d-flex gap-4 justify-content-end my-3 w-50">
+        <a href="/dashboard">home</a>
+        <a href="/logout">logout</a>
+    </header>
+    <main class="container p-4 border w-50 mb-4">
+        <h1 class="m-2 pb-3">Ready for your trip to: {{ride.destination}}?</h1>
+        <div class="d-flex gap-2">
+            <div class="w-25 ms-2">
+                <p class="fw-bold">Who's driving?</p>
+                <p class="fw-bold">Who's coming along?</p>
+                <p class="fw-bold">Date:</p>
+                <p class="fw-bold">Pickup Location:</p>
+                <p class="fw-bold">Details</p>
+            </div>
+            <div class="w-50 m2-2">
+                <p>{{ride.driver.first_name}}</p>
+                <p>{{ride.passenger.first_name}}</p>
+                <p>{{ride.date.strftime("%B %d")}}</p>
+                <p>{{ride.pickup}}</p>
+                <p>{{ride.details}}</p>
+            </div>
+        </div>
+        {% if ride.passenger.id == session["id"] %}
+            <a href="/rides/edit/{{ride.id}}">Edit</a>
+            <span> | </span>   
+        {% endif %}
+        <a href="/cancel_request/{{ride.id}}">Cancel</a>
+    </main>
+    <div class="border-top py-5 container w-50">
+        <h3 class="text-warning">Ride messages:</h3>
+        ----
+        Messages will go here
+        ----
+        <!-- {# loop throur messages to display in asc order #} -->
+        <form action="/add_message" method="post">
+            <textarea name="message" id="" cols="30" rows="2" class="form-control"></textarea>
+            <input type="submit" value="Send Message" class="btn btn-warning mt-2">
+        </form>
+    </div>
+</body>
+</html>

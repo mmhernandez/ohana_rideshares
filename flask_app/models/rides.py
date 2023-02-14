@@ -60,6 +60,28 @@ class Ride:
 
         return is_valid
     
+    @staticmethod
+    def validate_ride_edit(data):
+        is_valid = True
+
+        #validate pickup location
+        if len(data["pickup"]) < 1:
+            flash("Pickup location required", "pickup")
+            is_valid = False
+        elif len(data["pickup"]) < 3:
+            flash("Pickup location must be at least 3 pickup", "pickup")
+            is_valid = False
+
+        #validate details
+        if len(data["details"]) < 1:
+            flash("Details required", "details")
+            is_valid = False
+        elif len(data["details"]) < 10:
+            flash("Details must be at least 10 characters", "details")
+            is_valid = False
+
+        return is_valid
+    
     @classmethod
     def insert_ride(cls, data):
         query = '''
@@ -104,10 +126,62 @@ class Ride:
         return rides
     
     @classmethod
+    def get_one_with_passenger_and_driver(cls, data):
+        query = '''
+            SELECT * 
+            FROM rides R
+            LEFT JOIN users UP ON UP.id = R.passenger_id
+            LEFT JOIN users UD ON UD.id = R.driver_id
+            WHERE R.id = %(id)s;
+        '''
+        results = connectToMySQL(db).query_db(query, data)
+        ride_obj = cls(results[0])
+        for row in results:
+            passenger_info = {
+                "id" : row["UP.id"],
+                "first_name" : row["first_name"],
+                "last_name" : row["last_name"],
+                "email" : row["email"],
+                "password" : row["password"],
+                "created_at" : row["UP.created_at"],
+                "updated_at" : row["UP.updated_at"]
+            }
+            ride_obj.passenger = user.User(passenger_info)
+            driver_info = {
+                "id" : row["UD.id"],
+                "first_name" : row["UD.first_name"],
+                "last_name" : row["UD.last_name"],
+                "email" : row["UD.email"],
+                "password" : row["UD.password"],
+                "created_at" : row["UD.created_at"],
+                "updated_at" : row["UD.updated_at"]
+            }
+            ride_obj.driver = user.User(driver_info)
+        return ride_obj
+    
+    @classmethod
     def update_rides_driver(cls, data):
         query = '''
             UPDATE rides
             SET driver_id = %(driver_id)s
+            WHERE id = %(id)s;
+        '''
+        connectToMySQL(db).query_db(query, data)
+
+    @classmethod
+    def delete_ride(cls, data):
+        query = '''
+            DELETE FROM rides
+            WHERE id = %(id)s;
+        '''
+        connectToMySQL(db).query_db(query, data)
+
+    @classmethod
+    def update_ride_pickup_details(cls, data):
+        query = '''
+            UPDATE rides
+            SET pickup = %(pickup)s,
+                details = %(details)s
             WHERE id = %(id)s;
         '''
         connectToMySQL(db).query_db(query, data)
