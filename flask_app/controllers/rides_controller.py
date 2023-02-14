@@ -1,6 +1,6 @@
 from flask_app import app
 from flask import render_template, redirect, session, request
-from flask_app.models import user, rides
+from flask_app.models import user, ride, message    
 
 
 @app.route("/dashboard")
@@ -8,7 +8,7 @@ def dashboard():
     if "id" in session:
         logged_in_user_info = user.User.get_user_by_id({"id": session["id"]})
 
-        rides_list = rides.Ride.get_all_with_passenger_and_driver()
+        rides_list = ride.Ride.get_all_with_passenger_and_driver()
 
         return render_template("dashboard.html", user=logged_in_user_info, rides=rides_list)
     return redirect("/")
@@ -30,8 +30,8 @@ def insert_ride():
             "driver_id": None,
             "passenger_id": session["id"]
         }
-        if rides.Ride.validate_ride(ride_data):
-            rides.Ride.insert_ride(ride_data)
+        if ride.Ride.validate_ride(ride_data):
+            ride.Ride.insert_ride(ride_data)
             if "destination" in session:
                 session.pop("destination")
             if "pickup" in session:
@@ -66,7 +66,7 @@ def cancel_ride_request():
 @app.route("/cancel_request/<int:id>")
 def cancel_ride_by_id(id):
     if "id" in session:
-        rides.Ride.delete_ride({"id": id})
+        ride.Ride.delete_ride({"id": id})
         return redirect("/dashboard")
     return redirect("/")
 
@@ -77,7 +77,7 @@ def assign_driver(id):
             "id" : id,
             "driver_id" : session["id"]
         }
-        rides.Ride.update_rides_driver(ride_info)
+        ride.Ride.update_rides_driver(ride_info)
         return redirect("/dashboard")
     return redirect("/")
 
@@ -88,21 +88,22 @@ def cancel_driver(id):
             "id" : id,
             "driver_id" : None
         }
-        rides.Ride.update_rides_driver(ride_info)
+        ride.Ride.update_rides_driver(ride_info)
         return redirect("/dashboard")
     return redirect("/")
 
 @app.route("/rides/<int:id>")
 def view_ride(id):
     if "id" in session:
-        ride_info = rides.Ride.get_one_with_passenger_and_driver({"id": id})
-        return render_template("view_ride.html", ride=ride_info)
+        ride_info = ride.Ride.get_one_with_passenger_and_driver({"id": id})
+        message_list = message.Message.get_all_by_ride_with_sender_recipient({"id": id})
+        return render_template("view_ride.html", ride=ride_info, messages=message_list)
     return redirect("/")
 
 @app.route("/rides/edit/<int:id>")
 def edit_ride(id):
     if "id" in session:
-        ride_info = rides.Ride.get_one_with_passenger_and_driver({"id": id})
+        ride_info = ride.Ride.get_one_with_passenger_and_driver({"id": id})
         return render_template("edit_ride.html", ride=ride_info)
     return redirect("/")
 
@@ -114,8 +115,8 @@ def update_ride(id):
             "pickup": request.form["pickup"],
             "details": request.form["details"]
         }
-        if rides.Ride.validate_ride_edit(ride_data):
-            rides.Ride.update_ride_pickup_details(ride_data)
+        if ride.Ride.validate_ride_edit(ride_data):
+            ride.Ride.update_ride_pickup_details(ride_data)
             return redirect(f"/rides/{id}")   
         else:
             return redirect(f"/rides/edit/{id}")     

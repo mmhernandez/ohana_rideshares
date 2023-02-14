@@ -41,11 +41,15 @@
         ----
         Messages will go here
         ----
-        <!-- {# loop throur messages to display in asc order #} -->
-        <form action="/add_message" method="post">
-            <textarea name="message" id="" cols="30" rows="2" class="form-control"></textarea>
-            <input type="submit" value="Send Message" class="btn btn-warning mt-2">
-        </form>
+        <!-- {# loop through messages to display in asc order #} -->
+        {% if ride.driver.id == session["id"] %}
+            <form action="/send_message/{{ride.id}}/{{ride.driver.id}}/{{ride.passenger.id}}" method="post">
+        {% else %}
+            <form action="/send_message/{{ride.id}}/{{ride.passenger.id}}/{{ride.driver.id}}" method="post">
+        {% endif %}
+                <textarea name="message" id="" cols="30" rows="2" class="form-control"></textarea>
+                <input type="submit" value="Send Message" class="btn btn-warning mt-2">
+            </form>
     </div>
 </body>
 </html>
