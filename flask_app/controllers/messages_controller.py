@@ -9,7 +9,7 @@ def add_message(ride_id, sender_id, recipient_id):
             "content": request.form["message"],
             "ride_id": ride_id,
             "sender_id": sender_id,
-            "recipent_id": recipient_id
+            "recipient_id": recipient_id
         }
         message.Message.insert_message(message_info)
         return redirect(f"/rides/{ride_id}")

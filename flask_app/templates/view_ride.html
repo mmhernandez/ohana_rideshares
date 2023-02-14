@@ -37,11 +37,15 @@
         <a href="/cancel_request/{{ride.id}}">Cancel</a>
     </main>
     <div class="border-top py-5 container w-50">
-        <h3 class="text-warning">Ride messages:</h3>
-        ----
-        Messages will go here
-        ----
-        <!-- {# loop through messages to display in asc order #} -->
+        <h3 class="text-warning mb-5">Ride messages:</h3>
+        {% for message in messages %}
+            {% if not message %}
+                <div class="d-flex gap-4">
+                    <p class="w-25 text-end">{{message.sender.first_name}}:</p>
+                    <p>{{message.content}}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
         {% if ride.driver.id == session["id"] %}
             <form action="/send_message/{{ride.id}}/{{ride.driver.id}}/{{ride.passenger.id}}" method="post">
         {% else %}

@@ -30,10 +30,10 @@ class Message:
         query = '''
             SELECT *
             FROM messages M
-            LEFT JOIN rides R on M.ride_id = R.id
+            RIGHT OUTER JOIN rides R on M.ride_id = R.id
             LEFT JOIN users US ON M.sender_id = US.id
             LEFT JOIN users UR ON M.recipient_id = UR.id
-            WHERE R.id = %(ride_id)s
+            WHERE R.id = %(id)s
             ORDER BY M.created_at;
         '''
         results = connectToMySQL(db).query_db(query, data)
