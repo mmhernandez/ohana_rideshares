@@ -2,7 +2,7 @@ from flask_app.config.mysqlconnection import connectToMySQL
 from flask_app.models import ride, user
 from flask import flash
 
-db = db = "ohana_rideshare"
+db = "ohana_rideshare"
 
 class Message:
     def __init__(self, data):
@@ -11,28 +11,25 @@ class Message:
         self.created_at = data["created_at"]
         self.updated_at = data["updated_at"]
         self.ride_id = data["ride_id"]
-        self.sender_id = data["sender_id"]
-        self.recipient_id = data["recipient_id"]
+        self.user_id = data["user_id"]
         self.ride = None
-        self.sender = None
-        self.recipient = None
+        self.user = None
     
     @classmethod
     def insert_message(cls, data):
         query = '''
-            INSERT INTO messages (content, ride_id, sender_id, recipient_id)
-            VALUES (%(content)s, %(ride_id)s, %(sender_id)s, %(recipient_id)s);
+            INSERT INTO messages (content, ride_id, user_id)
+            VALUES (%(content)s, %(ride_id)s, %(user_id)s);
         '''
         connectToMySQL(db).query_db(query, data)
 
     @classmethod
-    def get_all_by_ride_with_sender_recipient(cls, data):
+    def get_all_by_ride_with_ride_user(cls, data):
         query = '''
             SELECT *
             FROM messages M
             RIGHT OUTER JOIN rides R on M.ride_id = R.id
-            LEFT JOIN users US ON M.sender_id = US.id
-            LEFT JOIN users UR ON M.recipient_id = UR.id
+            LEFT JOIN users U ON M.user_id = U.id
             WHERE R.id = %(id)s
             ORDER BY M.created_at;
         '''
@@ -52,26 +49,16 @@ class Message:
                 "passenger_id" : row["passenger_id"]
             }
             message_obj.ride = ride.Ride(ride_info)
-            sender_info = {
-                "id" : row["US.id"],
+            user_info = {
+                "id" : row["U.id"],
                 "first_name" : row["first_name"],
                 "last_name" : row["last_name"],
                 "email" : row["email"],
                 "password" : row["password"],
-                "created_at" : row["US.created_at"],
-                "updated_at" : row["US.updated_at"]
+                "created_at" : row["U.created_at"],
+                "updated_at" : row["U.updated_at"]
             }
-            message_obj.sender = user.User(sender_info)
-            recipient_info = {
-                "id" : row["UR.id"],
-                "first_name" : row["UR.first_name"],
-                "last_name" : row["UR.last_name"],
-                "email" : row["UR.email"],
-                "password" : row["UR.password"],
-                "created_at" : row["UR.created_at"],
-                "updated_at" : row["UR.updated_at"]
-            }
-            message_obj.recipient = user.User(recipient_info)
+            message_obj.sender = user.User(user_info)
             messages.append(message_obj)
         return messages
     

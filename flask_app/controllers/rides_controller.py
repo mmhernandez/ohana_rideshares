@@ -96,7 +96,8 @@ def cancel_driver(id):
 def view_ride(id):
     if "id" in session:
         ride_info = ride.Ride.get_one_with_passenger_and_driver({"id": id})
-        message_list = message.Message.get_all_by_ride_with_sender_recipient({"id": id})
+        message_list = message.Message.get_all_by_ride_with_ride_user({"id": id})
+        print(f"message obj = {message_list}")
         return render_template("view_ride.html", ride=ride_info, messages=message_list)
     return redirect("/")
 

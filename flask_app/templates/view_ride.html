@@ -39,18 +39,14 @@
     <div class="border-top py-5 container w-50">
         <h3 class="text-warning mb-5">Ride messages:</h3>
         {% for message in messages %}
-            {% if not message %}
+            {% if message.id %}
                 <div class="d-flex gap-4">
                     <p class="w-25 text-end">{{message.sender.first_name}}:</p>
                     <p>{{message.content}}</p>
                 </div>
             {% endif %}
         {% endfor %}
-        {% if ride.driver.id == session["id"] %}
-            <form action="/send_message/{{ride.id}}/{{ride.driver.id}}/{{ride.passenger.id}}" method="post">
-        {% else %}
-            <form action="/send_message/{{ride.id}}/{{ride.passenger.id}}/{{ride.driver.id}}" method="post">
-        {% endif %}
+            <form action="/send_message/{{ride.id}}" method="post">
                 <textarea name="message" id="" cols="30" rows="2" class="form-control"></textarea>
                 <input type="submit" value="Send Message" class="btn btn-warning mt-2">
             </form>

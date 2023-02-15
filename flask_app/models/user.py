@@ -8,8 +8,6 @@ db = "ohana_rideshare"
 bcrypt = Bcrypt(app)
 email_regex = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
 name_regex = re.compile(r'^[a-zA-Z ,.\'-]+$')
-# password_regex = re.compile(r'^(?=.[a-z])(?=.[A-Z])(?=.\d)(?=.[#$@!%&?])[A-Za-z\d#$@!%&?]{8,25}$')
-
 
 class User:
     def __init__(self, data):
@@ -65,9 +63,6 @@ class User:
         elif len(data["password"]) < 8:
             flash("Password must be at least 8 characters", "password")
             is_valid = False
-        # elif not password_regex.match(data["password"]):
-        #     flash("Invalid password (password must contain at least one uppercase letter, one number, and one special character)", "password")
-        #     is_valid = False
         elif data["password"] != data["confirm_password"]:
             flash("Passwords must match", "password")
             is_valid = False
