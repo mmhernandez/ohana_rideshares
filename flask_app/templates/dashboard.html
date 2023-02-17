@@ -55,14 +55,20 @@
                 {% if ride.driver_id %}
                     {% if ride.driver_id == session["id"] %}
                         <div class="border border-dark rounded bg-light p-4 my-4 d-flex flex-column gap-2">
+                            <p>
+                                You are driving <span class="fw-bold">{{ride.passenger.first_name}}</span> to {{ride.destination}} on {{ride.date.strftime("%b %d")}}
+                            </p>
                     {% elif ride.passenger_id == session["id"] %}
                         <div class="border border-warning rounded bg-light p-4 my-4 d-flex flex-column gap-2">
+                            <p>
+                                You are riding with <span class="fw-bold">{{ride.driver.first_name}}</span> to {{ride.destination}} on {{ride.date.strftime("%b %d")}}
+                            </p>
                     {% else %}
                         <div class="border rounded p-4 my-4 d-flex flex-column gap-2">
-                    {% endif %}
                             <p>
                                 <span class="fw-bold">{{ride.driver.first_name}}</span> is driving <span class="fw-bold">{{ride.passenger.first_name}}</span> to {{ride.destination}} on {{ride.date.strftime("%b %d")}}
                             </p>
+                    {% endif %}
                             {% if ride.driver_id == session["id"] %}
                                 <div>
                                     <a href="/rides/{{ride.id}}">Details</a><span> | </span>   
