@@ -1,6 +1,7 @@
 from flask_app.config.mysqlconnection import connectToMySQL
 from flask_app.models import user
 from flask import flash
+from datetime import date, datetime
 
 db = "ohana_rideshare"
 
@@ -39,15 +40,14 @@ class Ride:
             is_valid = False
 
         #validate rideshare date
-        # today = datetime.datetime.now().strftime('%Y-%m-%d')
-        # today_date = datetime.datetime.strptime(today,'%Y-%m-%d')
-        # ride_date = datetime.datetime.strptime(data["date"], '%Y-%m-%d')
+        today_date = date.today()
+        ride_date_formatted = datetime.strptime(data["date"], "%Y-%m-%d")
         if len(data["date"]) < 1:
             flash("Rideshare date required", "date")
             is_valid = False
-        # elif ride_date < today_date:
-        #     flash("Rideshare date cannot be in the past", "date")
-        #     is_valid = False
+        elif ride_date_formatted.date() < today_date:
+            flash("Rideshare date cannot be in the past", "date")
+            is_valid = False
 
         #validate details
         if len(data["details"]) < 1:
